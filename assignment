@@ -1,0 +1,16 @@
+=======================================================
+Crea un file json con dei dati multivariati: ci sono 10 data-point e
+ogni data-point ha cinque variabili quantitative i cui valori sono tutti
+positivi. In base a questi dati disegna 10 rettangoli nell'area di
+disegno (ogni rettangolo corrisponde ad un data-point). La prima
+variabile determina la posizione orizzontale del rettangolo, la seconda
+variabile la posizione verticale, la terza variabile la base, la quarta
+variabile l'altezza, e la quinta variabile la tonalità del riempimento.
+Facendo click con il pulsante sinistro su una caratteristica di un
+cerchio la variabile corrispondente viene utilizzata per la coordinata
+y, mentre la variabile prima utilizzata per la coordinata y viene
+utilizzata per quella caratteristica (per tutti i rettangoli). Facendo
+click con il pulsante destro lo stesso scambio avviene rispetto alla
+coordinata x. Fai in modo che i cambi di dimensioni e di posizione dei
+rettangoli avvengano con un'animazione fluida.
+=======================================================
