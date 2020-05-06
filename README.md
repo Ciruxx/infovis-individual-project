@@ -40,6 +40,10 @@ I metodi della classe sono i seguenti:
  - `render`
     - Questo metodo contiene il [JSX](https://it.reactjs.org/docs/introducing-jsx.html) del componente, ovvero, la 
     struttura simil html del componente, è un metodo obbligatorio in React.js.
+ - `getSections`
+    - Funzione helper che genera JSX.
+ - `getSubHeader`
+    - Funzione helper che genera JSX.
 
 ## Test
 
