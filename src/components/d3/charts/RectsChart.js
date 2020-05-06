@@ -72,8 +72,16 @@ class RectsChart extends Component {
         this.svg = svg
     }
 
-    getRandomColor(){
-        return '#'+(Math.random()*0xFFFFFF<<0).toString(16);
+    handleClick(event, characteristic){
+        event.preventDefault()
+        if (event.type === 'click') {
+            console.log('Left click');
+            this.update("y", characteristic)
+        } else if (event.type === 'contextmenu') {
+            console.log('Right click');
+            this.update("x", characteristic)
+            return false
+        }
     }
     update(baseCharacteristic, changeCharacteristic){
         console.log(`UPDATE: ${baseCharacteristic} <--> ${changeCharacteristic}`)
@@ -130,17 +138,8 @@ class RectsChart extends Component {
             .duration((d,i) => {return 200*(i+1)})
             .delay((d,i) => {return 200*i})
     }
-
-    handleClick(event, characteristic){
-        event.preventDefault()
-        if (event.type === 'click') {
-            console.log('Left click');
-            this.update("y", characteristic)
-        } else if (event.type === 'contextmenu') {
-            console.log('Right click');
-            this.update("x", characteristic)
-            return false
-        }
+    getRandomColor(){
+        return '#'+(Math.random()*0xFFFFFF<<0).toString(16);
     }
 
     render() {
