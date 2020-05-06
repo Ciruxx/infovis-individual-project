@@ -26,6 +26,8 @@ class D3Example extends Component {
                             <RectsChart/>
                         </Box>
                     </Paper>
+                    <br/>
+                    <br/>
                 </Container>
             </div>
         )

@@ -1,19 +1,22 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import * as d3 from 'd3'
 import {rects} from "../../../data/data.json"
 import './RectsChart.css';
 
-import { withStyles } from '@material-ui/core/styles';
+import {withStyles} from '@material-ui/core/styles';
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import ListSubheader from '@material-ui/core/ListSubheader';
 
 import HeightIcon from '@material-ui/icons/Height';
 import PaletteIcon from '@material-ui/icons/Palette';
 import BorderHorizontalIcon from '@material-ui/icons/BorderHorizontal';
 import BorderVerticalIcon from '@material-ui/icons/BorderVertical';
+
+import Box from '@material-ui/core/Box';
 
 import * as colors from '@material-ui/core/colors';
 
@@ -22,6 +25,21 @@ const useStyles = (theme) => ({
         width: '100%',
         maxWidth: 800,
         backgroundColor: theme.palette.background.paper,
+    },
+    legend: {
+        width: '100%',
+        maxWidth: 360,
+        maxHeight: 500,
+        backgroundColor: theme.palette.background.paper,
+        position: 'relative',
+        overflow: 'auto',
+    },
+    listSection: {
+        backgroundColor: 'inherit',
+    },
+    ul: {
+        backgroundColor: 'inherit',
+        padding: 0,
     },
 });
 
@@ -33,7 +51,11 @@ class RectsChart extends Component {
         this.svg = null
         this.handleClick = this.handleClick.bind(this)
         this.update = this.update.bind(this)
+        this.state = {
+            rects
+        }
     }
+
     componentDidMount() {
         this.draw()
     }
@@ -51,7 +73,7 @@ class RectsChart extends Component {
             .classed("svg-content-responsive", true)
 
         svg.append("g").selectAll("rect")
-            .data(rects)
+            .data(this.state.rects)
             .enter()
             .append("rect")
             .attr("x", function (d) {
@@ -69,10 +91,11 @@ class RectsChart extends Component {
             .attr("fill", function (d) {
                 return d.color;
             })
+
         this.svg = svg
     }
 
-    handleClick(event, characteristic){
+    handleClick(event, characteristic) {
         event.preventDefault()
         if (event.type === 'click') {
             console.log('Left click');
@@ -83,12 +106,13 @@ class RectsChart extends Component {
             return false
         }
     }
-    update(baseCharacteristic, changeCharacteristic){
+
+    update(baseCharacteristic, changeCharacteristic) {
         console.log(`UPDATE: ${baseCharacteristic} <--> ${changeCharacteristic}`)
 
-        let updatedRects = [...rects]
+        let updatedRects = [...this.state.rects]
         updatedRects = updatedRects.map((rect) => {
-            if(changeCharacteristic === "color") {
+            if (changeCharacteristic === "color") {
                 rect.color = this.getRandomColor()
                 return rect
             }
@@ -110,76 +134,133 @@ class RectsChart extends Component {
             .attr("width", 0)
             .attr("height", 0)
             .merge(rect)
-            .attr("x", function(d) {
+            .attr("x", function (d) {
                 return d.x;
             })
-            .attr("y", function(d) {
+            .attr("y", function (d) {
                 return d.y;
             })
-            .attr("width", function(d) {
+            .attr("width", function (d) {
                 return 0;
             })
-            .attr("height", function(d) {
+            .attr("height", function (d) {
                 return 0;
             })
-            .attr("fill", function(d) {
+            .attr("fill", function (d) {
                 return "#000000";
             })
         rect.transition()
-            .attr("width", function(d) {
+            .attr("width", function (d) {
                 return d.width;
             })
-            .attr("height", function(d) {
+            .attr("height", function (d) {
                 return d.height;
             })
-            .attr("fill", function(d) {
+            .attr("fill", function (d) {
                 return d.color;
             })
-            .duration((d,i) => {return 200*(i+1)})
-            .delay((d,i) => {return 200*i})
+            .duration((d, i) => {
+                return 200 * (i + 1)
+            })
+            .delay((d, i) => {
+                return 200 * i
+            })
+
+        this.setState({
+            rects: updatedRects
+        })
     }
-    getRandomColor(){
-        return '#'+(Math.random()*0xFFFFFF<<0).toString(16);
+
+    getRandomColor() {
+        return '#' + (Math.random() * 0xFFFFFF << 0).toString(16);
     }
 
     render() {
         const {classes} = this.props
-        return(
-        <div className={classes.root}>
-            <List component="nav" aria-label="main mailbox folders">
-                <ListItem button onClick={(event) => this.handleClick(event, "x")} onContextMenu={(event) => this.handleClick(event, "x")}>
-                    <ListItemIcon >
-                        <BorderHorizontalIcon style={{ color: colors.red[500] }} />
-                    </ListItemIcon>
-                    <ListItemText primary="Coordinate X" />
+        return (
+            <div className={classes.root}>
+                <List component="nav" aria-label="main mailbox folders">
+                    <ListItem button onClick={(event) => this.handleClick(event, "x")}
+                              onContextMenu={(event) => this.handleClick(event, "x")}>
+                        <ListItemIcon>
+                            <BorderHorizontalIcon style={{color: colors.red[500]}}/>
+                        </ListItemIcon>
+                        <ListItemText primary="Coordinate X"/>
+                    </ListItem>
+                    <ListItem button onClick={(event) => this.handleClick(event, "y")}
+                              onContextMenu={(event) => this.handleClick(event, "y")}>
+                        <ListItemIcon>
+                            <BorderVerticalIcon style={{color: colors.yellow[600]}}/>
+                        </ListItemIcon>
+                        <ListItemText primary="Coordinate Y"/>
+                    </ListItem>
+                    <ListItem button onClick={(event) => this.handleClick(event, "height")}
+                              onContextMenu={(event) => this.handleClick(event, "height")}>
+                        <ListItemIcon>
+                            <HeightIcon style={{color: colors.green[500]}}/>
+                        </ListItemIcon>
+                        <ListItemText primary="Height"/>
+                    </ListItem>
+                    <ListItem button onClick={(event) => this.handleClick(event, "width")}
+                              onContextMenu={(event) => this.handleClick(event, "width")}>
+                        <ListItemIcon>
+                            <HeightIcon color="primary"
+                                        style={{transform: "rotate(90deg)", color: colors.blue[500]}}/>
+                        </ListItemIcon>
+                        <ListItemText primary="Width"/>
+                    </ListItem>
+                    <ListItem button onClick={(event) => this.handleClick(event, "color")}
+                              onContextMenu={(event) => this.handleClick(event, "color")}>
+                        <ListItemIcon>
+                            <PaletteIcon style={{color: colors.brown[500]}}/>
+                        </ListItemIcon>
+                        <ListItemText primary="Color"/>
+                    </ListItem>
+                </List>
+                <Box display="flex" p={1}>
+                    <Box p={1} flexGrow={1} style={{width: '70%'}}>
+                        <div ref={this.canvasRef}/>
+                    </Box>
+                    <Box p={1} style={{width: '30%'}}>
+                        <List className={classes.legend} subheader={<li/>}>
+                            {this.getSections(classes)}
+                        </List>
+                    </Box>
+                </Box>
+
+            </div>
+        )
+    }
+
+    getSections(classes) {
+        const keys = Object.keys(this.state.rects)
+        return keys.map((rectId) => (
+            <li key={`section-${rectId}`} className={classes.listSection}>
+                <ul className={classes.ul}>
+                    <ListSubheader
+                        style={{
+                            color: this.state.rects[rectId].color,
+                            fontWeight: "bold"
+                        }}>{`Rect ${rectId}`}</ListSubheader>
+                    {this.getSubHeader(rectId)}
+                </ul>
+            </li>
+        ));
+    }
+
+    getSubHeader(rectId) {
+        const rect = this.state.rects[rectId];
+        const keys = Object.keys(rect)
+        let res = [];
+        for (const key of keys) {
+            res.push(
+                <ListItem key={`item-${rectId}-${key}`}>
+                    <ListItemText primary={`${key}: ${rect[key]}`}/>
                 </ListItem>
-                <ListItem button onClick={(event) => this.handleClick(event, "y")} onContextMenu={(event) => this.handleClick(event, "y")}>
-                    <ListItemIcon>
-                        <BorderVerticalIcon style={{ color: colors.yellow[600] }} />
-                    </ListItemIcon>
-                    <ListItemText primary="Coordinate Y" />
-                </ListItem>
-                <ListItem button onClick={(event) => this.handleClick(event, "height")} onContextMenu={(event) => this.handleClick(event, "height")}>
-                    <ListItemIcon>
-                        <HeightIcon style={{ color: colors.green[500] }}/>
-                    </ListItemIcon>
-                    <ListItemText primary="Height" />
-                </ListItem>
-                <ListItem button onClick={(event) => this.handleClick(event, "width")} onContextMenu={(event) => this.handleClick(event, "width")}>
-                    <ListItemIcon>
-                        <HeightIcon color="primary" style={{transform: "rotate(90deg)",  color: colors.blue[500]}}/>
-                    </ListItemIcon>
-                    <ListItemText primary="Width" />
-                </ListItem>
-                <ListItem button onClick={(event) => this.handleClick(event, "color")} onContextMenu={(event) => this.handleClick(event, "color")}>
-                    <ListItemIcon>
-                        <PaletteIcon style={{ color: colors.brown[500] }}/>
-                    </ListItemIcon>
-                    <ListItemText primary="Color" />
-                </ListItem>
-            </List>
-            <div ref={this.canvasRef} />
-        </div>
-    )}
+            )
+        }
+        return res
+    }
 }
-export default withStyles(useStyles, { withTheme: true })(RectsChart);
+
+export default withStyles(useStyles, {withTheme: true})(RectsChart);
