@@ -52,7 +52,8 @@ class RectsChart extends Component {
         this.handleClick = this.handleClick.bind(this)
         this.update = this.update.bind(this)
         this.state = {
-            rects
+            rects,
+            scales: null
         }
     }
 
@@ -72,26 +73,51 @@ class RectsChart extends Component {
             // Class to make it responsive.
             .classed("svg-content-responsive", true)
 
+        const scales = {
+            x: d3.scaleLinear()
+                .domain([0, 5000])
+                .range([0, 800])
+                .interpolate(d3.interpolateRound)
+                .clamp(true),
+            y: d3.scaleLinear()
+                .domain([0, 5000])
+                .range([0, 800])
+                .interpolate(d3.interpolateRound)
+                .clamp(true),
+            width: d3.scaleLinear()
+                .domain([0, 1000])
+                .range([20, 500])
+                .interpolate(d3.interpolateRound)
+                .clamp(true),
+            height: d3.scaleLinear()
+                .domain([0, 1000])
+                .range([20, 500])
+                .interpolate(d3.interpolateRound)
+                .clamp(true)
+        };
         svg.append("g").selectAll("rect")
             .data(this.state.rects)
             .enter()
             .append("rect")
             .attr("x", function (d) {
-                return d.x;
+                return scales.x(d.x);
             })
             .attr("y", function (d) {
-                return d.y;
+                return scales.y(d.y);
             })
             .attr("width", function (d) {
-                return d.width;
+                return scales.width(d.width);
             })
             .attr("height", function (d) {
-                return d.height;
+                return scales.height(d.height);
             })
             .attr("fill", function (d) {
                 return d.color;
             })
 
+        this.setState({
+            scales
+        })
         this.svg = svg
     }
 
@@ -120,8 +146,8 @@ class RectsChart extends Component {
             const changeCharacteristicValue = rect[changeCharacteristic]
             console.log(`VALUES: ${baseCharacteristicValue} <--> ${changeCharacteristicValue}`)
             console.log(rect)
-            rect[baseCharacteristic] = changeCharacteristicValue
-            rect[changeCharacteristic] = baseCharacteristicValue
+            rect[baseCharacteristic] = changeCharacteristicValue;
+            rect[changeCharacteristic] = baseCharacteristicValue;
             return rect
         })
 
@@ -134,11 +160,11 @@ class RectsChart extends Component {
             .attr("width", 0)
             .attr("height", 0)
             .merge(rect)
-            .attr("x", function (d) {
-                return d.x;
+            .attr("x", (d) => {
+                return this.state.scales.x(d.x);
             })
-            .attr("y", function (d) {
-                return d.y;
+            .attr("y", (d) => {
+                return this.state.scales.x(d.y);
             })
             .attr("width", function (d) {
                 return 0;
@@ -150,11 +176,13 @@ class RectsChart extends Component {
                 return "#000000";
             })
         rect.transition()
-            .attr("width", function (d) {
-                return d.width;
+            .attr("width", (d) => {
+                // return d.width;
+                return this.state.scales.width(d.width);
             })
-            .attr("height", function (d) {
-                return d.height;
+            .attr("height", (d) => {
+                // return d.height;
+                return this.state.scales.height(d.height);
             })
             .attr("fill", function (d) {
                 return d.color;
@@ -252,10 +280,15 @@ class RectsChart extends Component {
         const rect = this.state.rects[rectId];
         const keys = Object.keys(rect)
         let res = [];
+        console.log(this.state)
         for (const key of keys) {
+            let primary = (key !== "color" && this.state.scales != null) ?
+                `${key}: ${rect[key]} scaled to ${this.state.scales[key](rect[key])}`
+                :
+                `${key}: ${rect[key]}`;
             res.push(
                 <ListItem key={`item-${rectId}-${key}`}>
-                    <ListItemText primary={`${key}: ${rect[key]}`}/>
+                    <ListItemText primary={primary}/>
                 </ListItem>
             )
         }
