@@ -280,7 +280,6 @@ class RectsChart extends Component {
         const rect = this.state.rects[rectId];
         const keys = Object.keys(rect)
         let res = [];
-        console.log(this.state)
         for (const key of keys) {
             let primary = (key !== "color" && this.state.scales != null) ?
                 `${key}: ${rect[key]} scaled to ${this.state.scales[key](rect[key])}`
